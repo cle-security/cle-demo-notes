@@ -74,8 +74,8 @@ scope:
   respect_gitignore: true
 
 agent:
-  model: ollama:deepseek-v4-pro:cloud
-  max_concurrency: 25
+  model: anthropic:claude-sonnet-4-6
+  max_concurrency: 10
   timeout_seconds: 10000
   thinking: true
 
