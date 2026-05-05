@@ -1,0 +1,24 @@
+{
+  "name": "Clé",
+  "build": {
+    "dockerfile": "Dockerfile"
+  },
+  "remoteUser": "vscode",
+  "containerEnv": {
+    "SHELL": "/bin/zsh"
+  },
+  "customizations": {
+    "vscode": {
+      "extensions": [
+        "anthropic.claude-code",
+        "redhat.vscode-yaml"
+      ]
+    }
+  },
+  "mounts": [
+    "source=cle-claude,target=/home/vscode/.claude,type=volume",
+    "source=cle-zsh-history,target=/home/vscode/.zsh_history_dir,type=volume"
+  ],
+  "postCreateCommand": "grep -qF 'setup.sh' ~/.zshrc || echo 'source ${containerWorkspaceFolder}/.devcontainer/setup.sh' >> ~/.zshrc",
+  "waitFor": "postCreateCommand"
+}
