@@ -1,2 +1,15 @@
 node_modules
 dist
+.env
+*.log
+.DS_Store
+
+# SQLite database files
+*.db
+*.db-journal
+
+# Local uploads directory (user-supplied files)
+/uploads
+
+# Prisma generated client
+apps/api/src/generated

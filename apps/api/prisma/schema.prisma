@@ -1,0 +1,73 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "sqlite"
+  url      = env("DATABASE_URL")
+}
+
+model User {
+  id           String   @id @default(cuid())
+  email        String   @unique
+  username     String   @unique
+  displayName  String
+  bio          String   @default("")
+  passwordHash String
+  role         String   @default("user") // "user" | "admin"
+  disabled     Boolean  @default(false)
+  createdAt    DateTime @default(now())
+
+  notes      Note[]      @relation("NoteOwner")
+  sharedIn   NoteShare[] @relation("ShareTarget")
+  sessions   Session[]
+}
+
+model Session {
+  id        String   @id
+  userId    String
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  expiresAt DateTime
+  createdAt DateTime @default(now())
+
+  @@index([userId])
+  @@index([expiresAt])
+}
+
+model Note {
+  id        String   @id @default(cuid())
+  ownerId   String
+  owner     User     @relation("NoteOwner", fields: [ownerId], references: [id], onDelete: Cascade)
+  title     String
+  body      String
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  shares     NoteShare[]
+  attachment Attachment?
+
+  @@index([ownerId])
+}
+
+model NoteShare {
+  id       String @id @default(cuid())
+  noteId   String
+  note     Note   @relation(fields: [noteId], references: [id], onDelete: Cascade)
+  userId   String
+  user     User   @relation("ShareTarget", fields: [userId], references: [id], onDelete: Cascade)
+  createdAt DateTime @default(now())
+
+  @@unique([noteId, userId])
+  @@index([userId])
+}
+
+model Attachment {
+  id        String   @id @default(cuid())
+  noteId    String   @unique
+  note      Note     @relation(fields: [noteId], references: [id], onDelete: Cascade)
+  filename  String
+  storedAs  String   // filename on disk inside UPLOAD_DIR
+  mimeType  String
+  size      Int
+  createdAt DateTime @default(now())
+}
