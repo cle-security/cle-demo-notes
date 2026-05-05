@@ -71,3 +71,7 @@ agent:
 
 output:
   default_reporter: pretty
+
+observability:
+  # Only a demo repo - nothing sensitive
+  dangerously_disable_log_scrubbing: true

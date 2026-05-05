@@ -54,6 +54,22 @@
       "type": "object",
       "markdownDescription": "LLM and concurrency knobs for the verifier."
     },
+    "ObservabilityConfig": {
+      "additionalProperties": false,
+      "description": "Project-level Logfire / tracing preferences.\n\nTracing is opt-in via the `LOGFIRE_TOKEN` env var; this section\nonly controls how spans are produced once tracing is on.",
+      "properties": {
+        "dangerously_disable_log_scrubbing": {
+          "default": false,
+          "description": "Disable Logfire's default secret-pattern scrubber (which redacts attribute values matching `password`, `token`, `secret`, etc.). For a security-review tool the scrubber is mostly false positives \u2014 the agent legitimately reads code containing those words. Set true only when you trust the dashboard the `LOGFIRE_TOKEN` points at; raw span content (including any real secrets the codebase exposes) will reach it.",
+          "title": "Dangerously Disable Log Scrubbing",
+          "type": "boolean",
+          "markdownDescription": "Disable Logfire's default secret-pattern scrubber (which redacts attribute values matching `password`, `token`, `secret`, etc.). For a security-review tool the scrubber is mostly false positives \u2014 the agent legitimately reads code containing those words. Set true only when you trust the dashboard the `LOGFIRE_TOKEN` points at; raw span content (including any real secrets the codebase exposes) will reach it."
+        }
+      },
+      "title": "ObservabilityConfig",
+      "type": "object",
+      "markdownDescription": "Project-level Logfire / tracing preferences.\n\nTracing is opt-in via the `LOGFIRE_TOKEN` env var; this section\nonly controls how spans are produced once tracing is on."
+    },
     "OutputConfig": {
       "additionalProperties": false,
       "description": "Output defaults. Individual reporters are listed in `reporters`.",
@@ -342,6 +358,9 @@
       },
       "title": "Reporters",
       "type": "array"
+    },
+    "observability": {
+      "$ref": "#/$defs/ObservabilityConfig"
     }
   },
   "title": "Cl\u00e9 configuration",
