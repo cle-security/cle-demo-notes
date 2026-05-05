@@ -33,7 +33,8 @@
         "esbenp.prettier-vscode",
         "vitest.explorer",
         "qwtel.sqlite-viewer",
-        "anthropic.claude-code"
+        "anthropic.claude-code",
+        "redhat.vscode-yaml"
       ],
       "settings": {
         "editor.formatOnSave": true,

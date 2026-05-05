@@ -1,0 +1,73 @@
+# yaml-language-server: $schema=./cle-config.schema.json
+#
+# Drop a copy of cle's published JSON schema at the path above (or
+# remove this line) so VSCode autocompletes fields. The schema lives
+# in the cle repo at cle_cli/cle_cli/schemas/cle-config.schema.json.
+
+version: 1
+
+packs:
+  - asvs-l2
+
+# The verifier reads `context` as a Markdown briefing and lets it
+# inform applicability decisions ("no MFA isn't a gap — it's out of
+# scope by design"). Be honest about what the app is and isn't;
+# inflated context produces inflated findings.
+context: |
+  ## What this is
+
+  A small notes web app. Treat it as a competently-built-but-not-
+  paranoid app at a small startup, not a hardened production system.
+
+  ## Stack
+
+  - Backend: Node 20 + TypeScript + Fastify + Prisma + SQLite
+  - Frontend: Vue 3 + Vite + Pinia + Vue Router
+  - pnpm workspaces (`apps/api`, `apps/web`, `packages/types`)
+  - SQLite is in-process; no database server
+  - Files uploaded by users are stored on local disk under `uploads/`
+    and served via the API with per-request access checks
+
+  ## Authentication and sessions
+
+  Local signup with email + password. Passwords hashed with argon2.
+  Sessions are signed httpOnly sameSite=lax cookies. There is no
+  MFA, no OAuth, no password reset, and no email sending — these
+  are deliberately out of scope for this demo, not gaps. Findings
+  about their absence are not actionable.
+
+  ## Rendering
+
+  Note bodies and user bios are markdown, rendered client-side.
+  Output encoding happens at render time.
+
+  ## Roles
+
+  Two roles: regular user and admin. Admin is seedable via env;
+  there is no self-service admin promotion.
+
+scope:
+  # Whitelist — only these paths are eligible for analysis.
+  # The verifier won't read files outside this set even if asked.
+  include:
+    - "apps/api/src/**"
+    - "apps/web/src/**"
+    - "packages/**/src/**"
+    - "apps/api/prisma/schema.prisma"
+  exclude:
+    - "README.md"
+    - "**/*.test.ts"
+    - "**/*.spec.ts"
+    - "**/__tests__/**"
+    - "**/dist/**"
+    - "**/build/**"
+  respect_gitignore: true
+
+agent:
+  model: ollama:gemma4:31b-cloud
+  max_concurrency: 25
+  timeout_seconds: 10000
+  thinking: true
+
+output:
+  default_reporter: pretty

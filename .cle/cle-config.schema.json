@@ -1,0 +1,350 @@
+{
+  "$defs": {
+    "AgentConfig": {
+      "additionalProperties": false,
+      "description": "LLM and concurrency knobs for the verifier.",
+      "properties": {
+        "model": {
+          "default": "anthropic:claude-sonnet-4-6",
+          "description": "Pydantic-AI model identifier.",
+          "examples": [
+            "anthropic:claude-sonnet-4-6",
+            "openai:gpt-4o",
+            "google-gla:gemini-2.0-flash"
+          ],
+          "title": "Model",
+          "type": "string",
+          "markdownDescription": "Pydantic-AI model identifier."
+        },
+        "max_concurrency": {
+          "default": 4,
+          "minimum": 1,
+          "title": "Max Concurrency",
+          "type": "integer"
+        },
+        "timeout_seconds": {
+          "default": 300,
+          "minimum": 1,
+          "title": "Timeout Seconds",
+          "type": "integer"
+        },
+        "thinking": {
+          "anyOf": [
+            {
+              "type": "boolean"
+            },
+            {
+              "enum": [
+                "minimal",
+                "low",
+                "medium",
+                "high",
+                "xhigh"
+              ],
+              "type": "string"
+            }
+          ],
+          "default": true,
+          "description": "Enable provider extended-thinking / reasoning for verifier runs. `true` uses the provider's default; a string picks an explicit effort level; `false` disables.",
+          "title": "Thinking",
+          "markdownDescription": "Enable provider extended-thinking / reasoning for verifier runs. `true` uses the provider's default; a string picks an explicit effort level; `false` disables."
+        }
+      },
+      "title": "AgentConfig",
+      "type": "object",
+      "markdownDescription": "LLM and concurrency knobs for the verifier."
+    },
+    "OutputConfig": {
+      "additionalProperties": false,
+      "description": "Output defaults. Individual reporters are listed in `reporters`.",
+      "properties": {
+        "default_reporter": {
+          "default": "pretty",
+          "enum": [
+            "pretty",
+            "sarif",
+            "json",
+            "markdown",
+            "github"
+          ],
+          "title": "Default Reporter",
+          "type": "string"
+        }
+      },
+      "title": "OutputConfig",
+      "type": "object",
+      "markdownDescription": "Output defaults. Individual reporters are listed in `reporters`."
+    },
+    "ReporterConfig": {
+      "additionalProperties": false,
+      "description": "One reporter instance. `output` is required for file-emitting reporters.",
+      "properties": {
+        "type": {
+          "enum": [
+            "pretty",
+            "sarif",
+            "json",
+            "markdown",
+            "github"
+          ],
+          "title": "Type",
+          "type": "string"
+        },
+        "output": {
+          "anyOf": [
+            {
+              "format": "path",
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Output"
+        }
+      },
+      "required": [
+        "type"
+      ],
+      "title": "ReporterConfig",
+      "type": "object",
+      "markdownDescription": "One reporter instance. `output` is required for file-emitting reporters."
+    },
+    "RequirementSelector": {
+      "additionalProperties": false,
+      "description": "Filters applied on top of the requirements pulled from packs.",
+      "properties": {
+        "include": {
+          "description": "Requirement ids or glob patterns to keep.",
+          "examples": [
+            [
+              "V5.1.3",
+              "V5.*"
+            ]
+          ],
+          "items": {
+            "type": "string"
+          },
+          "title": "Include",
+          "type": "array",
+          "markdownDescription": "Requirement ids or glob patterns to keep."
+        },
+        "exclude": {
+          "description": "Requirement ids or glob patterns to drop.",
+          "examples": [
+            [
+              "V8.3.*"
+            ]
+          ],
+          "items": {
+            "type": "string"
+          },
+          "title": "Exclude",
+          "type": "array",
+          "markdownDescription": "Requirement ids or glob patterns to drop."
+        }
+      },
+      "title": "RequirementSelector",
+      "type": "object",
+      "markdownDescription": "Filters applied on top of the requirements pulled from packs."
+    },
+    "ScopeConfig": {
+      "additionalProperties": false,
+      "description": "Which files in the repo are eligible for analysis.",
+      "properties": {
+        "include": {
+          "description": "Glob patterns to include. Empty list means the whole repo.",
+          "items": {
+            "type": "string"
+          },
+          "title": "Include",
+          "type": "array",
+          "markdownDescription": "Glob patterns to include. Empty list means the whole repo."
+        },
+        "exclude": {
+          "description": "Glob patterns to exclude (in addition to gitignore).",
+          "items": {
+            "type": "string"
+          },
+          "title": "Exclude",
+          "type": "array",
+          "markdownDescription": "Glob patterns to exclude (in addition to gitignore)."
+        },
+        "respect_gitignore": {
+          "default": true,
+          "title": "Respect Gitignore",
+          "type": "boolean"
+        }
+      },
+      "title": "ScopeConfig",
+      "type": "object",
+      "markdownDescription": "Which files in the repo are eligible for analysis."
+    },
+    "Suppression": {
+      "additionalProperties": false,
+      "description": "A reviewed, time-bounded acceptance of a known finding.\n\nScope is set by either `path` (location-based, glob-aware) or\n`fingerprint` (content-based, location-independent) \u2014 they are\nmutually exclusive. With neither, the suppression applies repo-wide\nto every finding raised by `requirement`.",
+      "properties": {
+        "requirement": {
+          "description": "Requirement ID this suppresses.",
+          "title": "Requirement",
+          "type": "string",
+          "markdownDescription": "Requirement ID this suppresses."
+        },
+        "path": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "description": "Path or glob the suppression applies to. Omit for repo-wide.",
+          "title": "Path",
+          "markdownDescription": "Path or glob the suppression applies to. Omit for repo-wide."
+        },
+        "fingerprint": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "description": "Stable finding fingerprint, for code-location-independent suppression.",
+          "title": "Fingerprint",
+          "markdownDescription": "Stable finding fingerprint, for code-location-independent suppression."
+        },
+        "reason": {
+          "description": "Human explanation; required so the rationale is auditable.",
+          "title": "Reason",
+          "type": "string",
+          "markdownDescription": "Human explanation; required so the rationale is auditable."
+        },
+        "expires": {
+          "anyOf": [
+            {
+              "format": "date",
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "description": "Date after which the suppression no longer applies.",
+          "title": "Expires",
+          "markdownDescription": "Date after which the suppression no longer applies."
+        }
+      },
+      "required": [
+        "requirement",
+        "reason"
+      ],
+      "title": "Suppression",
+      "type": "object",
+      "markdownDescription": "A reviewed, time-bounded acceptance of a known finding.\n\nScope is set by either `path` (location-based, glob-aware) or\n`fingerprint` (content-based, location-independent) \u2014 they are\nmutually exclusive. With neither, the suppression applies repo-wide\nto every finding raised by `requirement`."
+    }
+  },
+  "additionalProperties": false,
+  "description": "Top-level config object loaded from `cle.yaml`.",
+  "properties": {
+    "version": {
+      "const": 1,
+      "default": 1,
+      "description": "Config schema version. Bumped on breaking changes.",
+      "title": "Version",
+      "type": "integer",
+      "markdownDescription": "Config schema version. Bumped on breaking changes."
+    },
+    "packs": {
+      "description": "Built-in pack identifiers or paths to custom pack files. Multiple packs are merged; conflicting requirement ids are an error.",
+      "items": {
+        "anyOf": [
+          {
+            "const": "asvs-l1",
+            "title": "asvs-l1",
+            "description": "OWASP ASVS Level 1 \u2014 70 requirements",
+            "markdownDescription": "OWASP ASVS Level 1 \u2014 70 requirements"
+          },
+          {
+            "const": "asvs-l2",
+            "title": "asvs-l2",
+            "description": "OWASP ASVS Level 2 \u2014 253 requirements",
+            "markdownDescription": "OWASP ASVS Level 2 \u2014 253 requirements"
+          },
+          {
+            "const": "asvs-l3",
+            "title": "asvs-l3",
+            "description": "OWASP ASVS Level 3 \u2014 345 requirements",
+            "markdownDescription": "OWASP ASVS Level 3 \u2014 345 requirements"
+          },
+          {
+            "const": "masvs",
+            "title": "masvs",
+            "description": "OWASP MASVS \u2014 24 requirements",
+            "markdownDescription": "OWASP MASVS \u2014 24 requirements"
+          },
+          {
+            "type": "string",
+            "description": "Path to a custom pack YAML file.",
+            "markdownDescription": "Path to a custom pack YAML file."
+          }
+        ]
+      },
+      "title": "Packs",
+      "type": "array",
+      "markdownDescription": "Built-in pack identifiers or paths to custom pack files. Multiple packs are merged; conflicting requirement ids are an error."
+    },
+    "context": {
+      "anyOf": [
+        {
+          "type": "string"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "default": null,
+      "description": "Codebase context provided to the verifier as Markdown. Orients the verifier on architecture, tech stack, and scope so it spends fewer tokens re-discovering them from source.",
+      "examples": [
+        "This is a Vue SPA with a FastAPI backend. Auth via Auth0, so password-hashing requirements don't apply."
+      ],
+      "title": "Context",
+      "markdownDescription": "Codebase context provided to the verifier as Markdown. Orients the verifier on architecture, tech stack, and scope so it spends fewer tokens re-discovering them from source."
+    },
+    "requirements": {
+      "$ref": "#/$defs/RequirementSelector"
+    },
+    "scope": {
+      "$ref": "#/$defs/ScopeConfig"
+    },
+    "suppressions": {
+      "items": {
+        "$ref": "#/$defs/Suppression"
+      },
+      "title": "Suppressions",
+      "type": "array"
+    },
+    "agent": {
+      "$ref": "#/$defs/AgentConfig"
+    },
+    "output": {
+      "$ref": "#/$defs/OutputConfig"
+    },
+    "reporters": {
+      "items": {
+        "$ref": "#/$defs/ReporterConfig"
+      },
+      "title": "Reporters",
+      "type": "array"
+    }
+  },
+  "title": "Cl\u00e9 configuration",
+  "type": "object",
+  "markdownDescription": "Top-level config object loaded from `cle.yaml`."
+}

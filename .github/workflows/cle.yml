@@ -1,0 +1,79 @@
+# Runs cle against this repo on every push to main and on PRs from
+# same-repo branches. SARIF lands in the Security tab; the github
+# reporter adds inline annotations on PRs.
+#
+# Skips PRs from forks — the verifier reads file contents, and a
+# malicious fork PR could embed prompt injection that ends up in
+# published findings. Run cle on fork PRs manually after a code review.
+
+name: cle
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  security-events: write # SARIF upload
+  pull-requests: read # github reporter annotations
+
+concurrency:
+  group: cle-${{ github.event.pull_request.number || github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  verify:
+    # Same-repo PRs and push/dispatch events always run; fork PRs are skipped.
+    if: github.event_name != 'pull_request' || github.event.pull_request.head.repo.full_name == github.repository
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          # --since mode walks back to the PR base; needs full history.
+          fetch-depth: 0
+
+      - name: Set up uv
+        uses: astral-sh/setup-uv@v4
+        with:
+          enable-cache: true
+
+      - name: Install cle
+        env:
+          CLE_TOKEN: ${{ secrets.CLE_INSTALL_TOKEN }}
+        run: |
+          uv tool install --from \
+            "git+https://x-access-token:${CLE_TOKEN}@github.com/cle-security/cle.git#subdirectory=cle_cli" \
+            cle-cli
+
+      - name: Run cle (PR diff)
+        if: github.event_name == 'pull_request'
+        env:
+          OLLAMA_API_KEY: ${{ secrets.OLLAMA_API_KEY }}
+          OLLAMA_BASE_URL: https://ollama.com/v1
+        run: |
+          cle verify \
+            --since origin/${{ github.base_ref }} \
+            --reporter sarif:cle-results.sarif \
+            --reporter github
+
+      - name: Run cle (full scan)
+        if: github.event_name != 'pull_request'
+        env:
+          OLLAMA_API_KEY: ${{ secrets.OLLAMA_API_KEY }}
+          OLLAMA_BASE_URL: https://ollama.com/v1
+        run: |
+          cle verify \
+            --reporter sarif:cle-results.sarif
+
+      - name: Upload SARIF
+        # Always upload — even if cle exited 1 because findings exist.
+        # The hashFiles guard skips upload when cle crashed before writing.
+        if: always() && hashFiles('cle-results.sarif') != ''
+        uses: github/codeql-action/upload-sarif@v3
+        with:
+          sarif_file: cle-results.sarif
+          category: cle
