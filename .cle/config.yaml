@@ -73,9 +73,9 @@ scope:
   respect_gitignore: true
 
 agent:
-  model: openai:moonshotai/Kimi-K2.6
-  #model: ollama:kimi-k2.6:cloud
-  max_concurrency: 5
+  #model: openai:moonshotai/Kimi-K2.6 # Infomaniak
+  model: ollama:kimi-k2.6:cloud # Ollama Cloud
+  max_concurrency: 25
   timeout_seconds: 60000
   thinking: true
 

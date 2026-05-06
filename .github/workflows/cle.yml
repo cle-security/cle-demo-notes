@@ -50,11 +50,11 @@ jobs:
       - name: Run cle (PR diff)
         if: github.event_name == 'pull_request'
         env:
-          OPENAI_API_KEY: ${{ secrets.OPENAI_API_KEY }}
-          OPENAI_BASE_URL: ${{ secrets.OPENAI_BASE_URL }}
+          #OPENAI_API_KEY: ${{ secrets.OPENAI_API_KEY }}
+          #OPENAI_BASE_URL: ${{ secrets.OPENAI_BASE_URL }}
           #ANTHROPIC_API_KEY: ${{ secrets.ANTHROPIC_API_KEY }}
-          #OLLAMA_API_KEY: ${{ secrets.OLLAMA_API_KEY }}
-          #OLLAMA_BASE_URL: https://ollama.com/v1
+          OLLAMA_API_KEY: ${{ secrets.OLLAMA_API_KEY }}
+          OLLAMA_BASE_URL: https://ollama.com/v1
           LOGFIRE_TOKEN: ${{ secrets.LOGFIRE_TOKEN }}
         run: |
           cle verify \
@@ -65,11 +65,11 @@ jobs:
       - name: Run cle (full scan)
         if: github.event_name != 'pull_request'
         env:
-          OPENAI_API_KEY: ${{ secrets.OPENAI_API_KEY }}
-          OPENAI_BASE_URL: ${{ secrets.OPENAI_BASE_URL }}
+          #OPENAI_API_KEY: ${{ secrets.OPENAI_API_KEY }}
+          #OPENAI_BASE_URL: ${{ secrets.OPENAI_BASE_URL }}
           #ANTHROPIC_API_KEY: ${{ secrets.ANTHROPIC_API_KEY }}
-          #OLLAMA_API_KEY: ${{ secrets.OLLAMA_API_KEY }}
-          #OLLAMA_BASE_URL: https://ollama.com/v1
+          OLLAMA_API_KEY: ${{ secrets.OLLAMA_API_KEY }}
+          OLLAMA_BASE_URL: https://ollama.com/v1
           LOGFIRE_TOKEN: ${{ secrets.LOGFIRE_TOKEN }}
         run: |
           cle verify \
