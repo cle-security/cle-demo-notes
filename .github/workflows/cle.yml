@@ -58,7 +58,6 @@ jobs:
           cle verify \
             --since origin/${{ github.base_ref }} \
             --reporter sarif:cle-results.sarif \
-            --reporter github \
             --no-fail
 
       - name: Run cle (full scan)
