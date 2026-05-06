@@ -46,15 +46,11 @@ context: |
   Two roles: regular user and admin. Admin is seedable via env;
   there is no self-service admin promotion.
 
-# requirements:
-#   include:
-#     - V2.2.1 # Input validation enforcement
-#     - V3.3.1 # Cookie Secure attribute / __Host- prefix
-#     - V3.4.5 # X-Content-Type-Options: nosniff header
-#     - V5.3.2 # File path generation / sanitization (traversal)
-#     - V6.2.1 # Password length minimum
-#     - V7.4.1 # Session termination on logout
-#     - V8.2.1 # Function-level access control
+requirements:
+  exclude:
+    - V9.* # Self-contained Tokens (session-based auth)
+    - V10.* # OAuth and OIDC (no OAuth flows)
+    - V17.* # WebRTC (no real-time)
 
 scope:
   # Allowlist — only these paths are eligible for analysis.
