@@ -6,7 +6,7 @@
 # malicious fork PR could embed prompt injection that ends up in
 # published findings. Run cle on fork PRs manually after a code review.
 
-name: cle
+name: Clé security review
 
 on:
   pull_request:
