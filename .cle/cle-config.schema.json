@@ -346,6 +346,13 @@
       "title": "Suppressions",
       "type": "array"
     },
+    "dedupe": {
+      "default": true,
+      "description": "Run a post-verification agent that clusters findings by root cause and merges duplicates. Multiple requirements often flag the same code gap from different angles; this collapses them into one canonical finding per cluster while leaving per-requirement verdicts untouched. Disable to keep every finding the verifier produces.",
+      "title": "Dedupe",
+      "type": "boolean",
+      "markdownDescription": "Run a post-verification agent that clusters findings by root cause and merges duplicates. Multiple requirements often flag the same code gap from different angles; this collapses them into one canonical finding per cluster while leaving per-requirement verdicts untouched. Disable to keep every finding the verifier produces."
+    },
     "agent": {
       "$ref": "#/$defs/AgentConfig"
     },
