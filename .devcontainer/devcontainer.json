@@ -8,7 +8,8 @@
       "configureZshAsDefaultShell": true,
       "installOhMyZsh": true,
       "installOhMyZshConfig": true
-    }
+    },
+    "ghcr.io/devcontainers/features/github-cli:1": {}
   },
   "remoteUser": "node",
   "forwardPorts": [3000, 5173],
@@ -21,7 +22,8 @@
     "source=cle-demo-notes-history,target=/commandhistory,type=volume"
   ],
   "containerEnv": {
-    "HISTFILE": "/commandhistory/.zsh_history"
+    "HISTFILE": "/commandhistory/.zsh_history",
+    "DO_NOT_TRACK": "true"
   },
   "postCreateCommand": ".devcontainer/post-create.sh",
   "customizations": {
