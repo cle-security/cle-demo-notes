@@ -155,9 +155,12 @@ export async function noteRoutes(app: FastifyInstance) {
     if (!note || note.ownerId !== req.user!.id) {
       return reply.code(404).send({ error: "not_found", message: "Note not found" });
     }
-    await prisma.noteShare
-      .delete({ where: { noteId_userId: { noteId: id, userId } } })
-      .catch(() => {});
+    const { count } = await prisma.noteShare.deleteMany({
+      where: { noteId: id, userId },
+    });
+    if (count === 0) {
+      return reply.code(404).send({ error: "not_found", message: "Share not found" });
+    }
     return { ok: true };
   });
 }
