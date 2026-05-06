@@ -75,7 +75,7 @@ scope:
 agent:
   model: openai:moonshotai/Kimi-K2.6
   #model: ollama:kimi-k2.6:cloud
-  max_concurrency: 25
+  max_concurrency: 5
   timeout_seconds: 60000
   thinking: true
 
