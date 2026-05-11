@@ -52,22 +52,6 @@ requirements:
     - V10.* # OAuth and OIDC (no OAuth flows)
     - V17.* # WebRTC (no real-time)
 
-scope:
-  # Allowlist — only these paths are eligible for analysis.
-  # The verifier won't read files outside this set even if asked.
-  include:
-    - "apps/api/src/**"
-    - "apps/web/src/**"
-    - "packages/**/src/**"
-    - "apps/api/prisma/schema.prisma"
-  exclude:
-    - "**/*.test.ts"
-    - "**/*.spec.ts"
-    - "**/__tests__/**"
-    - "**/dist/**"
-    - "**/build/**"
-  respect_gitignore: true
-
 agent:
   #model: openai:moonshotai/Kimi-K2.6 # Infomaniak
   #model: ollama:kimi-k2.6:cloud # Ollama Cloud
