@@ -54,11 +54,12 @@ requirements:
     - "V12.3" # TLS for outbound — no outbound HTTP
     - "V13.2" # Inter-component auth — single-app deployment
 
-    # Intentional architectural choice
+    # Intentional architectural choice — risk accepted
     - "V6.3" # Anti-automation / rate limiting — deferred
     - "V2.4" # Anti-automation against excessive calls — same rationale
+    - "V15.2.2" # ★ NEW: anti-automation for resource-intensive endpoints (argon2 amplification) — same rationale as V6.3
 
-    # Documentation paperwork
+    # Documentation paperwork — sections
     - "V2.1" # Input validation rules documentation
     - "V5.1" # File upload documentation
     - "V6.1" # Auth controls documentation
@@ -68,6 +69,12 @@ requirements:
     - "V14.1" # Sensitive data classification policy
     - "V15.1" # 3rd-party remediation timeframes
     - "V16.1" # Logging inventory documentation
+
+    # Documentation seams — sub-reqs in code-enforcement sections that
+    # reference documentation we don't carry (paired with the section above)
+    - "V15.2.1" # ★ NEW: "documented remediation time frames" — V15.1 excluded
+    - "V16.2.3" # ★ NEW: "documented in the log inventory" — V16.1 excluded
+    - "V6.2.11" # ★ NEW: "documented list of context-specific words" — V6.1 excluded
 
 agent:
   #model: openai:moonshotai/Kimi-K2.6 # Infomaniak
