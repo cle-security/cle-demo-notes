@@ -46,7 +46,7 @@ agent:
   model: fireworks:accounts/fireworks/models/minimax-m2p7
   #model: ollama:gemma4:31b-cloud
   #model: anthropic:claude-opus-4-7
-  max_concurrency: 8
+  max_concurrency: 5
   timeout_seconds: 60000
   thinking: True
 
