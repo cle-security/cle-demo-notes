@@ -29,24 +29,9 @@
           "type": "integer"
         },
         "thinking": {
-          "anyOf": [
-            {
-              "type": "boolean"
-            },
-            {
-              "enum": [
-                "minimal",
-                "low",
-                "medium",
-                "high",
-                "xhigh"
-              ],
-              "type": "string"
-            }
-          ],
+          "$ref": "#/$defs/ThinkingLevel",
           "default": true,
           "description": "Enable provider extended-thinking / reasoning for verifier runs. `true` uses the provider's default; a string picks an explicit effort level; `false` disables.",
-          "title": "Thinking",
           "markdownDescription": "Enable provider extended-thinking / reasoning for verifier runs. `true` uses the provider's default; a string picks an explicit effort level; `false` disables."
         }
       },
@@ -70,43 +55,12 @@
       "type": "object",
       "markdownDescription": "Project-level Logfire / tracing preferences.\n\nTracing is opt-in via the `LOGFIRE_TOKEN` env var; this section\nonly controls how spans are produced once tracing is on."
     },
-    "OutputConfig": {
-      "additionalProperties": false,
-      "description": "Output defaults. Individual reporters are listed in `reporters`.",
-      "properties": {
-        "default_reporter": {
-          "default": "pretty",
-          "enum": [
-            "pretty",
-            "sarif",
-            "sarif-github",
-            "json",
-            "markdown",
-            "github"
-          ],
-          "title": "Default Reporter",
-          "type": "string"
-        }
-      },
-      "title": "OutputConfig",
-      "type": "object",
-      "markdownDescription": "Output defaults. Individual reporters are listed in `reporters`."
-    },
     "ReporterConfig": {
       "additionalProperties": false,
       "description": "One reporter instance. `output` is required for file-emitting reporters.",
       "properties": {
         "type": {
-          "enum": [
-            "pretty",
-            "sarif",
-            "sarif-github",
-            "json",
-            "markdown",
-            "github"
-          ],
-          "title": "Type",
-          "type": "string"
+          "$ref": "#/$defs/ReporterName"
         },
         "output": {
           "anyOf": [
@@ -128,6 +82,17 @@
       "title": "ReporterConfig",
       "type": "object",
       "markdownDescription": "One reporter instance. `output` is required for file-emitting reporters."
+    },
+    "ReporterName": {
+      "enum": [
+        "pretty",
+        "sarif",
+        "sarif-github",
+        "json",
+        "markdown",
+        "github"
+      ],
+      "type": "string"
     },
     "RequirementSelector": {
       "additionalProperties": false,
@@ -205,6 +170,7 @@
       "properties": {
         "requirement": {
           "description": "Requirement ID this suppresses.",
+          "minLength": 1,
           "title": "Requirement",
           "type": "string",
           "markdownDescription": "Requirement ID this suppresses."
@@ -212,6 +178,7 @@
         "path": {
           "anyOf": [
             {
+              "minLength": 1,
               "type": "string"
             },
             {
@@ -226,6 +193,7 @@
         "fingerprint": {
           "anyOf": [
             {
+              "minLength": 1,
               "type": "string"
             },
             {
@@ -239,6 +207,7 @@
         },
         "reason": {
           "description": "Human explanation; required so the rationale is auditable.",
+          "minLength": 1,
           "title": "Reason",
           "type": "string",
           "markdownDescription": "Human explanation; required so the rationale is auditable."
@@ -266,6 +235,23 @@
       "title": "Suppression",
       "type": "object",
       "markdownDescription": "A reviewed, time-bounded acceptance of a known finding.\n\nScope is set by either `path` (location-based, glob-aware) or\n`fingerprint` (content-based, location-independent) \u2014 they are\nmutually exclusive. With neither, the suppression applies repo-wide\nto every finding raised by `requirement`."
+    },
+    "ThinkingLevel": {
+      "anyOf": [
+        {
+          "type": "boolean"
+        },
+        {
+          "enum": [
+            "minimal",
+            "low",
+            "medium",
+            "high",
+            "xhigh"
+          ],
+          "type": "string"
+        }
+      ]
     }
   },
   "additionalProperties": false,
@@ -328,12 +314,14 @@
         }
       ],
       "default": null,
-      "description": "Codebase context provided to the verifier as Markdown. Orients the verifier on architecture, tech stack, and scope so it spends fewer tokens re-discovering them from source.",
+      "description": "Codebase context provided to the verifier as Markdown. Orients the verifier on architecture, tech stack, and scope so it spends fewer tokens re-discovering them from source. Also drives severity calibration \u2014 note deployment surface (public / internal / localhost-only), audience, and data sensitivity so the verifier can judge blast radius and threat-model fit.",
       "examples": [
-        "This is a Vue SPA with a FastAPI backend. Auth via Auth0, so password-hashing requirements don't apply."
+        "This is a Vue SPA with a FastAPI backend. Auth via Auth0, so password-hashing requirements don't apply.",
+        "Production-facing SaaS handling regulated PII; assume hostile internet exposure. Multi-tenant; tenant isolation is a hard boundary.",
+        "Internal CLI tool for engineers, distributed as a wheel. No network exposure; runs against the user's local checkout."
       ],
       "title": "Context",
-      "markdownDescription": "Codebase context provided to the verifier as Markdown. Orients the verifier on architecture, tech stack, and scope so it spends fewer tokens re-discovering them from source."
+      "markdownDescription": "Codebase context provided to the verifier as Markdown. Orients the verifier on architecture, tech stack, and scope so it spends fewer tokens re-discovering them from source. Also drives severity calibration \u2014 note deployment surface (public / internal / localhost-only), audience, and data sensitivity so the verifier can judge blast radius and threat-model fit."
     },
     "requirements": {
       "$ref": "#/$defs/RequirementSelector"
@@ -351,8 +339,11 @@
     "agent": {
       "$ref": "#/$defs/AgentConfig"
     },
-    "output": {
-      "$ref": "#/$defs/OutputConfig"
+    "default_reporter": {
+      "$ref": "#/$defs/ReporterName",
+      "default": "pretty",
+      "description": "Reporter used when `--reporter` is not passed on the command line and no `reporters` are configured. Individual reporter outputs are configured via `reporters`.",
+      "markdownDescription": "Reporter used when `--reporter` is not passed on the command line and no `reporters` are configured. Individual reporter outputs are configured via `reporters`."
     },
     "reporters": {
       "items": {
