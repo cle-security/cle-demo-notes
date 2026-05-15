@@ -50,8 +50,7 @@ agent:
   timeout_seconds: 60000
   thinking: True
 
-output:
-  default_reporter: pretty
+default_reporter: pretty
 
 observability:
   # Only a demo repo - nothing sensitive
