@@ -33,6 +33,14 @@
           "default": true,
           "description": "Enable provider extended-thinking / reasoning for verifier runs. `true` uses the provider's default; a string picks an explicit effort level; `false` disables.",
           "markdownDescription": "Enable provider extended-thinking / reasoning for verifier runs. `true` uses the provider's default; a string picks an explicit effort level; `false` disables."
+        },
+        "max_human_questions": {
+          "default": 30,
+          "description": "Hard cap on `ask_human` calls during a single `cle init` / `cle sync` run. Once reached, further calls return a deferred result without prompting so a misbehaving onboarding loop cannot spin on token cost.",
+          "minimum": 1,
+          "title": "Max Human Questions",
+          "type": "integer",
+          "markdownDescription": "Hard cap on `ask_human` calls during a single `cle init` / `cle sync` run. Once reached, further calls return a deferred result without prompting so a misbehaving onboarding loop cannot spin on token cost."
         }
       },
       "title": "AgentConfig",
